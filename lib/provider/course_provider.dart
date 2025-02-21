@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -19,9 +17,6 @@ class CourseProvider with ChangeNotifier {
 
   Lesson? _watchingLesson;
   Lesson? get watchingLesson => _watchingLesson;
-
-  final Map<String, Duration> _lessonPositions = {};
-  Map<String, Duration> get lessonPositions => _lessonPositions;
 
   void setUpVideoDataSource({required Course course}) {
     _dataSourceList.clear();
@@ -73,9 +68,15 @@ class CourseProvider with ChangeNotifier {
     }
   }
 
-  int findLessonDataSourceIndex({required Lesson lesson}) {
+  int findDataSourceIndexByLesson({required Lesson lesson}) {
     return _dataSourceList
         .indexWhere((element) => element.url == lesson.lessonUrl);
+  }
+
+  Lesson findLessonByDataSourceIndex({required int? index}) {
+    return _videoLessons.firstWhere(
+        (element) => _dataSourceList[index!].url == element.lessonUrl,
+        orElse: () => _videoLessons.first);
   }
 
   bool isLessonWatching({required int lessonId}) {
@@ -87,7 +88,6 @@ class CourseProvider with ChangeNotifier {
 
   void setWatchingLesson({required Lesson lesson}) async {
     _watchingLesson = lesson;
-
     notifyListeners();
   }
 
@@ -96,21 +96,6 @@ class CourseProvider with ChangeNotifier {
         ? 0
         : _dataSourceList
             .indexWhere((element) => element.url == _watchingLesson?.lessonUrl);
-  }
-
-  void updateLessonPosition({required Duration position}) {
-    if (_watchingLesson != null) {
-      _lessonPositions["${_watchingLesson!.id}"] = position;
-      notifyListeners();
-    }
-  }
-
-  // Get the position for the current lesson
-  Duration? getLessonPosition() {
-    if (_watchingLesson != null) {
-      return _lessonPositions["${_watchingLesson!.id}"];
-    }
-    return null;
   }
 
   //

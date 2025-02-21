@@ -20,7 +20,7 @@ class CourseProvider with ChangeNotifier {
   Lesson? _watchingLesson;
   Lesson? get watchingLesson => _watchingLesson;
 
-  Map<String, Duration> _lessonPositions = {};
+  final Map<String, Duration> _lessonPositions = {};
   Map<String, Duration> get lessonPositions => _lessonPositions;
 
   void setUpVideoDataSource({required Course course}) {
@@ -99,11 +99,10 @@ class CourseProvider with ChangeNotifier {
   }
 
   void updateLessonPosition({required Duration position}) {
-    // if (_watchingLesson != null) {
-    //   _lessonPositions["${_watchingLesson!.id}"] = position;
-    //   notifyListeners();
-    // }
-    log(position.toString());
+    if (_watchingLesson != null) {
+      _lessonPositions["${_watchingLesson!.id}"] = position;
+      notifyListeners();
+    }
   }
 
   // Get the position for the current lesson

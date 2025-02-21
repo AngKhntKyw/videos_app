@@ -43,7 +43,9 @@ class _HomePageState extends State<HomePage> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(6),
-                child: CachedNetworkImage(imageUrl: course.imgUrl),
+                child: CachedNetworkImage(
+                  imageUrl: course.imgUrl,
+                ),
               ),
               Text(
                 course.title,

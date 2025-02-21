@@ -2,6 +2,7 @@ import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:videos_app/core/model/course.dart';
+import 'package:videos_app/core/model/lesson.dart';
 import 'package:videos_app/provider/course_provider.dart';
 
 class CourseDetailPage extends StatefulWidget {
@@ -29,8 +30,9 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
   }
 
   @override
-  void didPop() {
+  void didPop() async {
     context.read<CourseProvider>().clearDataSources();
+    await getKey?.betterPlayerController!.clearCache();
     super.didPop();
   }
 
@@ -56,6 +58,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
             child: ListView.builder(
               physics: const ClampingScrollPhysics(),
               itemCount: widget.course.units.length,
+              shrinkWrap: true,
               itemBuilder: (context, index) {
                 return ExpansionTile(
                   childrenPadding: const EdgeInsets.symmetric(horizontal: 10),
@@ -71,37 +74,47 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
                       "${widget.course.units[index].lessons.length} lessons"),
                   onExpansionChanged: (value) {},
                   children: [
+                    //
                     ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: widget.course.units[index].lessons.length,
                       itemBuilder: (context, lessonIndex) {
+                        Lesson currentLesson =
+                            widget.course.units[index].lessons[lessonIndex];
+
+                        //
                         return ListTile(
                           dense: true,
-                          leading: const Icon(Icons.video_collection_rounded),
+                          leading: courseProvider.isLessonWatching(
+                                  lessonId: currentLesson.id)
+                              ? const Icon(Icons.pause_circle)
+                              : const Icon(Icons.play_circle),
                           title: Text(
-                            widget
-                                .course.units[index].lessons[lessonIndex].title,
+                            currentLesson.title,
                           ),
                           subtitle: Text(
-                            widget.course.units[index].lessons[lessonIndex]
-                                .description,
+                            currentLesson.description,
                             maxLines: 2,
                           ),
                           trailing: IconButton(
-                              onPressed: () {},
-                              icon: const Icon(Icons.file_download_outlined)),
+                            onPressed: () {},
+                            icon: const Icon(Icons.file_download_outlined),
+                          ),
                           onTap: () async {
                             final courseProvider =
                                 context.read<CourseProvider>();
 
-                            //
                             await getKey?.betterPlayerController!.clearCache();
+
                             getKey?.setupDataSource(
                               courseProvider.findLessonDataSourceIndex(
-                                lesson: widget
-                                    .course.units[index].lessons[lessonIndex],
+                                lesson: currentLesson,
                               ),
+                            );
+
+                            courseProvider.setWatchingLesson(
+                              lesson: currentLesson,
                             );
                           },
                         );
@@ -117,7 +130,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
     );
   }
 
-  void initBetterPlayer() async {
+  void initBetterPlayer() {
     betterPlayerConfiguration = BetterPlayerConfiguration(
       controlsConfiguration: const BetterPlayerControlsConfiguration(
         progressBarHandleColor: Color(0xff227143),
@@ -137,9 +150,23 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
       fullScreenAspectRatio: 16 / 9,
       handleLifecycle: true,
       eventListener: (event) async {
+        //
+
+        //
         switch (event.betterPlayerEventType) {
           case BetterPlayerEventType.initialized:
-            getKey!.betterPlayerController!.setControlsVisibility(false);
+            getKey?.betterPlayerController!.setControlsVisibility(false);
+
+            // Seek to the saved position
+            // final position = context.read<CourseProvider>().getLessonPosition();
+            // if (position != null) {
+            //   await getKey?.betterPlayerController!.seekTo(position);
+            // }
+
+            await getKey?.betterPlayerController!
+                .seekTo(const Duration(seconds: 10));
+            await getKey?.betterPlayerController?.play();
+
             break;
 
           case BetterPlayerEventType.changedTrack:
@@ -151,15 +178,25 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
             await getKey?.betterPlayerController!.clearCache();
             break;
 
+          case BetterPlayerEventType.progress:
+            final position = await getKey
+                ?.betterPlayerController!.videoPlayerController!.position;
+
+            context
+                .read<CourseProvider>()
+                .updateLessonPosition(position: position!);
+
+            break;
+
           default:
         }
       },
     );
 
-    betterPlayerPlaylistConfiguration = const BetterPlayerPlaylistConfiguration(
+    betterPlayerPlaylistConfiguration = BetterPlayerPlaylistConfiguration(
       loopVideos: false,
-      nextVideoDelay: Duration(seconds: 5),
-      // initialStartIndex: 2,
+      nextVideoDelay: const Duration(seconds: 5),
+      initialStartIndex: context.read<CourseProvider>().getLastWatchingLesson(),
     );
   }
 }

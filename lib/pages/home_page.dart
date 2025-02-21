@@ -30,7 +30,7 @@ class _HomePageState extends State<HomePage> {
         },
         child: Container(
           clipBehavior: Clip.hardEdge,
-          height: size.height / 5,
+          height: size.height / 4,
           width: size.width / 2,
           margin: const EdgeInsets.all(20),
           padding: const EdgeInsets.all(4),

@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:developer';
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +24,9 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
   late BetterPlayerConfiguration betterPlayerConfiguration;
   late BetterPlayerPlaylistConfiguration betterPlayerPlaylistConfiguration;
 
+  //
+  Timer? timer;
+
   @override
   void initState() {
     context.read<CourseProvider>().setUpVideoDataSource(course: widget.course);
@@ -33,8 +38,10 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
   void didPop() async {
     context.read<CourseProvider>().clearDataSources();
     await getKey?.betterPlayerController!.clearCache();
+    await getKey?.betterPlayerController!.videoPlayerController!.dispose();
     getKey?.betterPlayerController!.dispose(forceDispose: true);
     getKey?.dispose();
+    timer = null;
     super.didPop();
   }
 
@@ -155,41 +162,58 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
       autoDetectFullscreenAspectRatio: true,
       fullScreenByDefault: false,
       autoDispose: true,
-      aspectRatio: 16 / 9,
-      fullScreenAspectRatio: 16 / 9,
+      // aspectRatio: 16 / 9,
+      // fullScreenAspectRatio: 16 / 9,
       handleLifecycle: true,
       eventListener: (event) async {
+        // log(event.betterPlayerEventType.name);
         switch (event.betterPlayerEventType) {
+          //
           case BetterPlayerEventType.setupDataSource:
+            log("Start new track");
+            timer ??= Timer(
+              const Duration(seconds: 3),
+              () async {
+                log("Time reset ");
+                timer = null;
+              },
+            );
             break;
 
           case BetterPlayerEventType.initialized:
-            getKey?.betterPlayerController!.setControlsVisibility(false);
+            // getKey?.betterPlayerController!.setControlsVisibility(false);
             await getKey?.betterPlayerController!.play();
-            getKey!.currentDataSourceIndex != 0
-                ? courseProvider.setWatchingLesson(
-                    lesson: courseProvider.findLessonByDataSourceIndex(
-                      index: getKey?.currentDataSourceIndex,
-                    ),
-                  )
-                : null;
             break;
 
           case BetterPlayerEventType.changedTrack:
             if (!mounted) return;
             await getKey?.betterPlayerController!.clearCache();
 
-            break;
+            if (getKey!.currentDataSourceIndex != 0) {
+              final lesson = courseProvider.findLessonByDataSourceIndex(
+                index: getKey?.currentDataSourceIndex,
+              );
+              courseProvider.setWatchingLesson(lesson: lesson);
 
-          case BetterPlayerEventType.changedSubtitles:
-            await getKey?.betterPlayerController!.clearCache();
+              final aspectRatio = getKey?.betterPlayerController!
+                  .videoPlayerController!.value.aspectRatio;
+              getKey?.betterPlayerController!
+                  .setOverriddenAspectRatio(aspectRatio!);
+
+              getKey?.betterPlayerController!
+                  .seekTo(const Duration(seconds: 20));
+            }
+
             break;
 
           case BetterPlayerEventType.progress:
+            timer != null && timer!.isActive ? null : log("start to process");
             break;
 
           case BetterPlayerEventType.finished:
             await getKey?.betterPlayerController!.clearCache();
+            break;
+
           default:
             break;
         }

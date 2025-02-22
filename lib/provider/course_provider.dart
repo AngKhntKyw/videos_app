@@ -22,22 +22,30 @@ class CourseProvider with ChangeNotifier {
     _dataSourceList.clear();
     _videoLessons.clear();
     // add intro video into dataSourceList
-    _dataSourceList.add(BetterPlayerDataSource.network(
-      course.introVideoUrl,
-      cacheConfiguration: BetterPlayerCacheConfiguration(
-        key: course.introVideoUrl,
-        useCache: true,
-        preCacheSize: 10 * 2024 * 2024,
-        maxCacheSize: 10 * 1024 * 1024,
-        maxCacheFileSize: 50 * 1024 * 1024,
+    _dataSourceList.add(
+      BetterPlayerDataSource.network(
+        course.introVideoUrl,
+        drmConfiguration: BetterPlayerDrmConfiguration(),
+        liveStream: false,
+        useAsmsTracks: true,
+        videoFormat: BetterPlayerVideoFormat.hls,
+        useAsmsAudioTracks: true,
+        useAsmsSubtitles: true,
+        cacheConfiguration: BetterPlayerCacheConfiguration(
+          key: course.introVideoUrl,
+          useCache: true,
+          preCacheSize: 10 * 2024 * 2024,
+          maxCacheSize: 10 * 1024 * 1024,
+          maxCacheFileSize: 50 * 1024 * 1024,
+        ),
+        bufferingConfiguration: const BetterPlayerBufferingConfiguration(
+          minBufferMs: 20000,
+          maxBufferMs: 50000,
+          bufferForPlaybackMs: 2500,
+          bufferForPlaybackAfterRebufferMs: 5000,
+        ),
       ),
-      bufferingConfiguration: const BetterPlayerBufferingConfiguration(
-        minBufferMs: 20000,
-        maxBufferMs: 50000,
-        bufferForPlaybackMs: 2500,
-        bufferForPlaybackAfterRebufferMs: 5000,
-      ),
-    ));
+    );
 
     //
     _videoLessons = course.units
@@ -50,6 +58,12 @@ class CourseProvider with ChangeNotifier {
       _dataSourceList.add(
         BetterPlayerDataSource.network(
           lesson.lessonUrl,
+          drmConfiguration: BetterPlayerDrmConfiguration(),
+          liveStream: false,
+          useAsmsTracks: true,
+          videoFormat: BetterPlayerVideoFormat.hls,
+          useAsmsAudioTracks: true,
+          useAsmsSubtitles: true,
           cacheConfiguration: BetterPlayerCacheConfiguration(
             key: lesson.lessonUrl,
             useCache: true,
@@ -104,38 +118,3 @@ class CourseProvider with ChangeNotifier {
     _videoLessons.clear();
   }
 }
-
-
-
-//  if (_watchingLesson == null) {
-//       null;
-//     } else {
-//       final index = _currentPositionPerLesson.indexWhere((map) =>
-//           map['lessonId'] ==
-//           findLessonDataSourceIndex(lesson: _watchingLesson!));
-
-//       if (index != -1) {
-//         _currentPositionPerLesson[index]['position'] = position;
-//         log("update existed");
-//       } else {
-//         _currentPositionPerLesson.add({
-//           'lessonId': findLessonDataSourceIndex(lesson: _watchingLesson!),
-//           'position': position,
-//         });
-//         log("add new");
-//       }
-//       notifyListeners();
-//     }
-
-//  if (_watchingLesson == null) {
-//       return const Duration(seconds: 0);
-//     } else {
-//       final map = _currentPositionPerLesson.firstWhere(
-//         (map) =>
-//             map['lessonId'] ==
-//             findLessonDataSourceIndex(lesson: _watchingLesson!),
-//         orElse: () => {},
-//       );
-
-//       return map['position'] as Duration?;
-//     }

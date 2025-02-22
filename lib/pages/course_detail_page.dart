@@ -33,6 +33,8 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
   void didPop() async {
     context.read<CourseProvider>().clearDataSources();
     await getKey?.betterPlayerController!.clearCache();
+    getKey?.betterPlayerController!.dispose(forceDispose: true);
+    getKey?.dispose();
     super.didPop();
   }
 
@@ -41,7 +43,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
     final courseProvider = context.watch<CourseProvider>();
 
     return Scaffold(
-      appBar: AppBar(surfaceTintColor: Colors.white),
+      appBar: AppBar(),
       body: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -89,7 +91,10 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
                           dense: true,
                           leading: courseProvider.isLessonWatching(
                                   lessonId: currentLesson.id)
-                              ? const Icon(Icons.pause_circle)
+                              ? const Icon(
+                                  Icons.pause_circle,
+                                  color: Colors.green,
+                                )
                               : const Icon(Icons.play_circle),
                           title: Text(
                             currentLesson.title,

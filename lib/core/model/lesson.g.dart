@@ -11,8 +11,8 @@ _$LessonImpl _$$LessonImplFromJson(Map<String, dynamic> json) => _$LessonImpl(
       title: json['title'] as String,
       description: json['description'] as String,
       instruction: json['instruction'] as String,
-      lessonType: json['lessonType'] as String,
-      lessonUrl: json['lessonUrl'] as String,
+      lessonType: json['lessonType'] as String?,
+      lessonUrl: json['lessonUrl'] as String?,
     );
 
 Map<String, dynamic> _$$LessonImplToJson(_$LessonImpl instance) =>

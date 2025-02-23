@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -131,20 +132,24 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
                             icon: const Icon(Icons.file_download_outlined),
                           ),
                           onTap: () async {
-                            final courseProvider =
-                                context.read<CourseProvider>();
+                            if (currentLesson.lessonUrl != null) {
+                              final courseProvider =
+                                  context.read<CourseProvider>();
 
-                            await getKey?.betterPlayerController!.clearCache();
+                              await getKey?.betterPlayerController!
+                                  .clearCache();
 
-                            getKey?.setupDataSource(
-                              courseProvider.findDataSourceIndexByLesson(
+                              getKey?.setupDataSource(
+                                  courseProvider.findDataSourceIndexByLesson(
                                 lesson: currentLesson,
-                              ),
-                            );
+                              ));
 
-                            courseProvider.setWatchingLesson(
-                              lesson: currentLesson,
-                            );
+                              courseProvider.setWatchingLesson(
+                                lesson: currentLesson,
+                              );
+                            } else {
+                              log("Lesson URL : null");
+                            }
                           },
                         );
                       },
@@ -165,10 +170,10 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
     //
     betterPlayerConfiguration = BetterPlayerConfiguration(
       controlsConfiguration: const BetterPlayerControlsConfiguration(
-        progressBarHandleColor: Color(0xff227143),
+        progressBarHandleColor: Colors.green,
         progressBarBackgroundColor: Colors.white,
         progressBarBufferedColor: Colors.grey,
-        progressBarPlayedColor: Color(0xff227143),
+        progressBarPlayedColor: Colors.green,
         enableMute: true,
         iconsColor: Colors.white,
       ),

@@ -11,8 +11,8 @@ class Lesson with _$Lesson {
     required String title,
     required String description,
     required String instruction,
-    required String lessonType,
-    required String lessonUrl,
+    String? lessonType,
+    String? lessonUrl,
   }) = _Lesson;
 
   factory Lesson.fromJson(Map<String, dynamic> json) => _$LessonFromJson(json);

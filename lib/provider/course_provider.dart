@@ -60,7 +60,7 @@ class CourseProvider with ChangeNotifier {
     for (Lesson lesson in _videoLessons) {
       _dataSourceList.add(
         BetterPlayerDataSource.network(
-          lesson.lessonUrl,
+          lesson.lessonUrl ?? "https://www.youtube.com/watch?v=BgazxvsE0Uk",
           drmConfiguration: BetterPlayerDrmConfiguration(),
           liveStream: false,
           useAsmsTracks: true,
@@ -86,8 +86,9 @@ class CourseProvider with ChangeNotifier {
   }
 
   int findDataSourceIndexByLesson({required Lesson lesson}) {
-    return _dataSourceList
-        .indexWhere((element) => element.url == lesson.lessonUrl);
+    return _dataSourceList.indexWhere((element) =>
+        element.url ==
+        (lesson.lessonUrl ?? "https://www.youtube.com/watch?v=BgazxvsE0Uk"));
   }
 
   Lesson findLessonByDataSourceIndex({required int? index}) {

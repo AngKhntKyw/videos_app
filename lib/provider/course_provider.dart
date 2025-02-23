@@ -18,6 +18,9 @@ class CourseProvider with ChangeNotifier {
   Lesson? _watchingLesson;
   Lesson? get watchingLesson => _watchingLesson;
 
+  final Map<int, Duration> _lessonPositions = {};
+  Map<int, Duration> get lessonPositions => _lessonPositions;
+
   void setUpVideoDataSource({required Course course}) {
     _dataSourceList.clear();
     _videoLessons.clear();
@@ -110,6 +113,13 @@ class CourseProvider with ChangeNotifier {
         ? 0
         : _dataSourceList
             .indexWhere((element) => element.url == _watchingLesson?.lessonUrl);
+  }
+
+  void updateLessonPosition({required Duration position}) {
+    if (_watchingLesson != null) {
+      _lessonPositions[_watchingLesson!.id] = position;
+      notifyListeners();
+    }
   }
 
   //

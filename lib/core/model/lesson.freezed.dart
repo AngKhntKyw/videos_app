@@ -26,6 +26,7 @@ mixin _$Lesson {
   String get instruction => throw _privateConstructorUsedError;
   String? get lessonType => throw _privateConstructorUsedError;
   String? get lessonUrl => throw _privateConstructorUsedError;
+  DownloadModel? get downloadModel => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -43,7 +44,10 @@ abstract class $LessonCopyWith<$Res> {
       String description,
       String instruction,
       String? lessonType,
-      String? lessonUrl});
+      String? lessonUrl,
+      DownloadModel? downloadModel});
+
+  $DownloadModelCopyWith<$Res>? get downloadModel;
 }
 
 /// @nodoc
@@ -65,6 +69,7 @@ class _$LessonCopyWithImpl<$Res, $Val extends Lesson>
     Object? instruction = null,
     Object? lessonType = freezed,
     Object? lessonUrl = freezed,
+    Object? downloadModel = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -91,7 +96,23 @@ class _$LessonCopyWithImpl<$Res, $Val extends Lesson>
           ? _value.lessonUrl
           : lessonUrl // ignore: cast_nullable_to_non_nullable
               as String?,
+      downloadModel: freezed == downloadModel
+          ? _value.downloadModel
+          : downloadModel // ignore: cast_nullable_to_non_nullable
+              as DownloadModel?,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $DownloadModelCopyWith<$Res>? get downloadModel {
+    if (_value.downloadModel == null) {
+      return null;
+    }
+
+    return $DownloadModelCopyWith<$Res>(_value.downloadModel!, (value) {
+      return _then(_value.copyWith(downloadModel: value) as $Val);
+    });
   }
 }
 
@@ -108,7 +129,11 @@ abstract class _$$LessonImplCopyWith<$Res> implements $LessonCopyWith<$Res> {
       String description,
       String instruction,
       String? lessonType,
-      String? lessonUrl});
+      String? lessonUrl,
+      DownloadModel? downloadModel});
+
+  @override
+  $DownloadModelCopyWith<$Res>? get downloadModel;
 }
 
 /// @nodoc
@@ -128,6 +153,7 @@ class __$$LessonImplCopyWithImpl<$Res>
     Object? instruction = null,
     Object? lessonType = freezed,
     Object? lessonUrl = freezed,
+    Object? downloadModel = freezed,
   }) {
     return _then(_$LessonImpl(
       id: null == id
@@ -154,6 +180,10 @@ class __$$LessonImplCopyWithImpl<$Res>
           ? _value.lessonUrl
           : lessonUrl // ignore: cast_nullable_to_non_nullable
               as String?,
+      downloadModel: freezed == downloadModel
+          ? _value.downloadModel
+          : downloadModel // ignore: cast_nullable_to_non_nullable
+              as DownloadModel?,
     ));
   }
 }
@@ -167,7 +197,8 @@ class _$LessonImpl extends _Lesson {
       required this.description,
       required this.instruction,
       this.lessonType,
-      this.lessonUrl})
+      this.lessonUrl,
+      this.downloadModel})
       : super._();
 
   factory _$LessonImpl.fromJson(Map<String, dynamic> json) =>
@@ -185,10 +216,12 @@ class _$LessonImpl extends _Lesson {
   final String? lessonType;
   @override
   final String? lessonUrl;
+  @override
+  final DownloadModel? downloadModel;
 
   @override
   String toString() {
-    return 'Lesson(id: $id, title: $title, description: $description, instruction: $instruction, lessonType: $lessonType, lessonUrl: $lessonUrl)';
+    return 'Lesson(id: $id, title: $title, description: $description, instruction: $instruction, lessonType: $lessonType, lessonUrl: $lessonUrl, downloadModel: $downloadModel)';
   }
 
   @override
@@ -205,13 +238,15 @@ class _$LessonImpl extends _Lesson {
             (identical(other.lessonType, lessonType) ||
                 other.lessonType == lessonType) &&
             (identical(other.lessonUrl, lessonUrl) ||
-                other.lessonUrl == lessonUrl));
+                other.lessonUrl == lessonUrl) &&
+            (identical(other.downloadModel, downloadModel) ||
+                other.downloadModel == downloadModel));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, title, description, instruction, lessonType, lessonUrl);
+  int get hashCode => Object.hash(runtimeType, id, title, description,
+      instruction, lessonType, lessonUrl, downloadModel);
 
   @JsonKey(ignore: true)
   @override
@@ -234,7 +269,8 @@ abstract class _Lesson extends Lesson {
       required final String description,
       required final String instruction,
       final String? lessonType,
-      final String? lessonUrl}) = _$LessonImpl;
+      final String? lessonUrl,
+      final DownloadModel? downloadModel}) = _$LessonImpl;
   const _Lesson._() : super._();
 
   factory _Lesson.fromJson(Map<String, dynamic> json) = _$LessonImpl.fromJson;
@@ -251,6 +287,8 @@ abstract class _Lesson extends Lesson {
   String? get lessonType;
   @override
   String? get lessonUrl;
+  @override
+  DownloadModel? get downloadModel;
   @override
   @JsonKey(ignore: true)
   _$$LessonImplCopyWith<_$LessonImpl> get copyWith =>

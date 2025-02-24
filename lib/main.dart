@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:videos_app/pages/home_page.dart';
 import 'package:videos_app/provider/course_provider.dart';
+import 'package:videos_app/provider/download_task_provider.dart';
 
 void main() {
   runApp(
@@ -9,8 +10,14 @@ void main() {
       providers: [
         ChangeNotifierProvider(
           lazy: true,
-          create: (context) => CourseProvider(),
+          create: (_) => CourseProvider(),
         ),
+        ChangeNotifierProvider(
+          lazy: true,
+          create: (_) => DownloadTaskProvider(
+            CourseProvider(),
+          ),
+        )
       ],
       child: const MyApp(),
     ),

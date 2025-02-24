@@ -1,14 +1,13 @@
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:videos_app/core/model/course.dart';
 import 'package:videos_app/core/model/lesson.dart';
 
 class CourseProvider with ChangeNotifier {
   //
-  final FlutterSecureStorage flutterSecureStorage =
-      const FlutterSecureStorage();
-  //
+  Course? _currentCourse;
+  Course? get currentCourse => _currentCourse;
+
   final List<BetterPlayerDataSource> _dataSourceList = [];
   List<BetterPlayerDataSource> get dataSourceList => _dataSourceList;
 
@@ -18,13 +17,16 @@ class CourseProvider with ChangeNotifier {
   Lesson? _watchingLesson;
   Lesson? get watchingLesson => _watchingLesson;
 
-  final Map<int, Duration> _lessonPositions = {};
-  Map<int, Duration> get lessonPositions => _lessonPositions;
-
   void setUpVideoDataSource({required Course course}) {
+    // assign current course
+
     _dataSourceList.clear();
     _videoLessons.clear();
-    // add intro video into dataSourceList
+    _currentCourse == null;
+    _currentCourse = course;
+
+    // add intro video into dataSourceLists
+
     _dataSourceList.add(
       BetterPlayerDataSource.network(
         course.introVideoUrl,
@@ -97,6 +99,11 @@ class CourseProvider with ChangeNotifier {
         orElse: () => _videoLessons.first);
   }
 
+  void setWatchingLesson({required Lesson lesson}) async {
+    _watchingLesson = lesson;
+    notifyListeners();
+  }
+
   bool isLessonWatching({required int lessonId}) {
     if (_watchingLesson != null) {
       return _watchingLesson!.id == lessonId;
@@ -104,28 +111,10 @@ class CourseProvider with ChangeNotifier {
     return false;
   }
 
-  void setWatchingLesson({required Lesson lesson}) async {
-    _watchingLesson = lesson;
-    notifyListeners();
-  }
-
-  int getLastWatchingLesson() {
-    return _watchingLesson == null
-        ? 0
-        : _dataSourceList
-            .indexWhere((element) => element.url == _watchingLesson?.lessonUrl);
-  }
-
-  void updateLessonPosition({required Duration position}) {
-    if (_watchingLesson != null) {
-      _lessonPositions[_watchingLesson!.id] = position;
-      notifyListeners();
-    }
-  }
-
   //
   void clearDataSources() {
     _dataSourceList.clear();
     _videoLessons.clear();
+    _currentCourse = null;
   }
 }

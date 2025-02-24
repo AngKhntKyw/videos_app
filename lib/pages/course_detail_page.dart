@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:developer';
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +24,6 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
   late BetterPlayerPlaylistConfiguration betterPlayerPlaylistConfiguration;
 
   //
-  Timer? timer;
 
   @override
   void initState() {
@@ -41,52 +39,103 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
     await getKey?.betterPlayerController!.videoPlayerController!.dispose();
     getKey?.betterPlayerController!.dispose(forceDispose: true);
     getKey?.dispose();
-    timer = null;
     super.didPop();
+  }
+
+  void initBetterPlayer() {
+    final courseProvider = context.read<CourseProvider>();
+    betterPlayerConfiguration = BetterPlayerConfiguration(
+      controlsConfiguration: const BetterPlayerControlsConfiguration(
+        progressBarHandleColor: Colors.green,
+        progressBarBackgroundColor: Colors.white,
+        progressBarBufferedColor: Colors.grey,
+        progressBarPlayedColor: Colors.green,
+        enableMute: true,
+        iconsColor: Colors.white,
+      ),
+      autoPlay: false,
+      fit: BoxFit.contain,
+      autoDetectFullscreenDeviceOrientation: true,
+      autoDetectFullscreenAspectRatio: true,
+      fullScreenByDefault: false,
+      autoDispose: true,
+      aspectRatio: 16 / 9,
+      fullScreenAspectRatio: 16 / 9,
+      handleLifecycle: true,
+      eventListener: (event) async {
+        switch (event.betterPlayerEventType) {
+          //
+          case BetterPlayerEventType.setupDataSource:
+            // resetTimer();
+            break;
+
+          case BetterPlayerEventType.initialized:
+            getKey?.betterPlayerController!.setControlsVisibility(false);
+            await getKey?.betterPlayerController!.play();
+            break;
+
+          case BetterPlayerEventType.changedTrack:
+            if (!mounted) return;
+            await getKey?.betterPlayerController!.clearCache();
+
+            if (getKey!.currentDataSourceIndex != 0) {
+              final lesson = courseProvider.findLessonByDataSourceIndex(
+                index: getKey?.currentDataSourceIndex,
+              );
+              courseProvider.setWatchingLesson(lesson: lesson);
+
+              final aspectRatio = getKey?.betterPlayerController!
+                  .videoPlayerController!.value.aspectRatio;
+              getKey?.betterPlayerController!
+                  .setOverriddenAspectRatio(aspectRatio!);
+            }
+            break;
+
+          case BetterPlayerEventType.progress:
+            if (!mounted) return;
+            break;
+
+          case BetterPlayerEventType.finished:
+            await getKey?.betterPlayerController!.clearCache();
+            break;
+
+          default:
+            break;
+        }
+      },
+    );
+
+    betterPlayerPlaylistConfiguration = const BetterPlayerPlaylistConfiguration(
+      loopVideos: false,
+      nextVideoDelay: Duration(seconds: 5),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final courseProvider = context.watch<CourseProvider>();
-    final lessonPositionList = courseProvider.lessonPositions.entries.toList();
 
     return Scaffold(
-      appBar: AppBar(),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            BetterPlayerPlaylist(
-              betterPlayerConfiguration: betterPlayerConfiguration,
-              key: betterPlayerPlaylistStateKey,
-              betterPlayerDataSourceList: courseProvider.dataSourceList,
-              betterPlayerPlaylistConfiguration:
-                  betterPlayerPlaylistConfiguration,
-            ),
-            ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: lessonPositionList.length,
-              itemBuilder: (context, index) {
-                final entry = lessonPositionList[index];
-                final lessonId = entry.key;
-                final position = entry.value;
+      appBar: AppBar(title: Text(courseProvider.currentCourse!.title)),
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          BetterPlayerPlaylist(
+            betterPlayerConfiguration: betterPlayerConfiguration,
+            key: betterPlayerPlaylistStateKey,
+            betterPlayerDataSourceList: courseProvider.dataSourceList,
+            betterPlayerPlaylistConfiguration:
+                betterPlayerPlaylistConfiguration,
+          ),
 
-                return ListTile(
-                  title: Text('Lesson ID: $lessonId'),
-                  subtitle: Text('Position: ${position.inSeconds} seconds'),
-                );
-              },
-            ),
-            ListView.builder(
-              // physics: const ClampingScrollPhysics(),
-              physics: const NeverScrollableScrollPhysics(),
+          //
+          Expanded(
+            child: ListView.builder(
+              physics: const ClampingScrollPhysics(),
               itemCount: widget.course.units.length,
-              shrinkWrap: true,
               itemBuilder: (context, index) {
                 return ExpansionTile(
                   childrenPadding: const EdgeInsets.symmetric(horizontal: 10),
-                  maintainState: false,
                   shape: const ContinuousRectangleBorder(
                       side: BorderSide(color: Colors.grey, width: 0)),
                   controlAffinity: ListTileControlAffinity.trailing,
@@ -113,6 +162,20 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
                         //
                         return ListTile(
                           dense: true,
+                          onTap: () async {
+                            if (currentLesson.lessonUrl != null) {
+                              await getKey?.betterPlayerController!
+                                  .clearCache();
+
+                              getKey?.setupDataSource(
+                                courseProvider.findDataSourceIndexByLesson(
+                                  lesson: currentLesson,
+                                ),
+                              );
+                            } else {
+                              log("Lesson URL : null");
+                            }
+                          },
                           leading: courseProvider.isLessonWatching(
                                   lessonId: currentLesson.id)
                               ? const Icon(
@@ -131,26 +194,6 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
                             onPressed: () {},
                             icon: const Icon(Icons.file_download_outlined),
                           ),
-                          onTap: () async {
-                            if (currentLesson.lessonUrl != null) {
-                              final courseProvider =
-                                  context.read<CourseProvider>();
-
-                              await getKey?.betterPlayerController!
-                                  .clearCache();
-
-                              getKey?.setupDataSource(
-                                  courseProvider.findDataSourceIndexByLesson(
-                                lesson: currentLesson,
-                              ));
-
-                              courseProvider.setWatchingLesson(
-                                lesson: currentLesson,
-                              );
-                            } else {
-                              log("Lesson URL : null");
-                            }
-                          },
                         );
                       },
                     ),
@@ -158,101 +201,11 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
                 );
               },
             ),
-          ],
-        ),
-      ),
-    );
-  }
+          ),
 
-  void initBetterPlayer() {
-    final courseProvider = context.read<CourseProvider>();
-
-    //
-    betterPlayerConfiguration = BetterPlayerConfiguration(
-      controlsConfiguration: const BetterPlayerControlsConfiguration(
-        progressBarHandleColor: Colors.green,
-        progressBarBackgroundColor: Colors.white,
-        progressBarBufferedColor: Colors.grey,
-        progressBarPlayedColor: Colors.green,
-        enableMute: true,
-        iconsColor: Colors.white,
-      ),
-      autoPlay: false,
-      fit: BoxFit.contain,
-      autoDetectFullscreenDeviceOrientation: true,
-      autoDetectFullscreenAspectRatio: true,
-      fullScreenByDefault: false,
-      autoDispose: true,
-      aspectRatio: 16 / 9,
-      fullScreenAspectRatio: 16 / 9,
-      handleLifecycle: true,
-      eventListener: (event) async {
-        switch (event.betterPlayerEventType) {
           //
-          case BetterPlayerEventType.setupDataSource:
-            resetTimer();
-            break;
-
-          case BetterPlayerEventType.initialized:
-            getKey?.betterPlayerController!.setControlsVisibility(false);
-            await getKey?.betterPlayerController!.play();
-            break;
-
-          case BetterPlayerEventType.changedTrack:
-            if (!mounted) return;
-            await getKey?.betterPlayerController!.clearCache();
-
-            if (getKey!.currentDataSourceIndex != 0) {
-              final lesson = courseProvider.findLessonByDataSourceIndex(
-                index: getKey?.currentDataSourceIndex,
-              );
-              courseProvider.setWatchingLesson(lesson: lesson);
-
-              final aspectRatio = getKey?.betterPlayerController!
-                  .videoPlayerController!.value.aspectRatio;
-              getKey?.betterPlayerController!
-                  .setOverriddenAspectRatio(aspectRatio!);
-
-              getKey?.betterPlayerController!.seekTo(
-                courseProvider
-                        .lessonPositions[courseProvider.watchingLesson!.id] ??
-                    const Duration(seconds: 0),
-              );
-            }
-            break;
-
-          case BetterPlayerEventType.progress:
-            if (!mounted) return;
-            final position = await getKey
-                ?.betterPlayerController!.videoPlayerController!.position;
-            timer != null && timer!.isActive
-                ? null
-                : courseProvider.updateLessonPosition(position: position!);
-            break;
-
-          case BetterPlayerEventType.finished:
-            await getKey?.betterPlayerController!.clearCache();
-            break;
-
-          default:
-            break;
-        }
-      },
-    );
-
-    betterPlayerPlaylistConfiguration = BetterPlayerPlaylistConfiguration(
-      loopVideos: false,
-      nextVideoDelay: const Duration(seconds: 5),
-      initialStartIndex: context.read<CourseProvider>().getLastWatchingLesson(),
-    );
-  }
-
-  void resetTimer() {
-    timer ??= Timer(
-      const Duration(seconds: 5),
-      () async {
-        timer = null;
-      },
+        ],
+      ),
     );
   }
 }

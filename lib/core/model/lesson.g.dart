@@ -13,6 +13,7 @@ _$LessonImpl _$$LessonImplFromJson(Map<String, dynamic> json) => _$LessonImpl(
       instruction: json['instruction'] as String,
       lessonType: json['lessonType'] as String?,
       lessonUrl: json['lessonUrl'] as String?,
+      isDownloaded: json['isDownloaded'] as bool? ?? false,
       downloadModel: json['downloadModel'] == null
           ? null
           : DownloadModel.fromJson(
@@ -27,5 +28,6 @@ Map<String, dynamic> _$$LessonImplToJson(_$LessonImpl instance) =>
       'instruction': instance.instruction,
       'lessonType': instance.lessonType,
       'lessonUrl': instance.lessonUrl,
+      'isDownloaded': instance.isDownloaded,
       'downloadModel': instance.downloadModel,
     };

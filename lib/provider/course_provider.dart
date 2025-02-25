@@ -1,6 +1,8 @@
+import 'dart:developer';
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:videos_app/core/model/course.dart';
+import 'package:videos_app/core/model/download_model.dart';
 import 'package:videos_app/core/model/lesson.dart';
 
 class CourseProvider with ChangeNotifier {
@@ -22,7 +24,6 @@ class CourseProvider with ChangeNotifier {
 
     _dataSourceList.clear();
     _videoLessons.clear();
-    _currentCourse == null;
     _currentCourse = course;
 
     // add intro video into dataSourceLists
@@ -104,11 +105,71 @@ class CourseProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Lesson? findLessonByDownloadModelId({required int downloadModelId}) {
+    for (var unit in currentCourse!.units) {
+      for (var lesson in unit.lessons) {
+        if (lesson.downloadModel?.id == downloadModelId) {
+          return lesson;
+        }
+      }
+    }
+    return null;
+  }
+
   bool isLessonWatching({required int lessonId}) {
     if (_watchingLesson != null) {
       return _watchingLesson!.id == lessonId;
     }
     return false;
+  }
+
+  void updateCourse(DownloadModel downloadModel) {
+    log('Lesson : ${downloadModel.status!.name} | ${downloadModel.path}');
+    if (currentCourse != null) {
+      final foundLesson =
+          findLessonByDownloadModelId(downloadModelId: downloadModel.id!);
+      if (foundLesson != null) {
+        foundLesson.downloadModel = downloadModel;
+
+        if (downloadModel.path != null && downloadModel.path!.isNotEmpty) {
+          foundLesson.downloadModel!.courseId = currentCourse!.id;
+          foundLesson.downloadModel!.path = downloadModel.path;
+          foundLesson.downloadModel!.courseTitle = currentCourse!.title;
+
+          // Find Player DataSource and Replace
+          // with local downloaded path
+          // if not the lesson type is not pdf
+
+          if (foundLesson.lessonType == "PDF") {
+            notifyListeners();
+          } else {
+            final foundDc =
+                _dataSourceList.firstWhere((e) => e.url == downloadModel.url);
+            log('FoundDc : ${foundDc.url}');
+            final idx = _dataSourceList.indexOf(foundDc);
+            _dataSourceList[idx] =
+                BetterPlayerDataSource.file(downloadModel.path!);
+            notifyListeners();
+          }
+        } else {
+          final foundDc =
+              _dataSourceList.firstWhere((e) => e.url == downloadModel.url);
+          final idx = _dataSourceList.indexOf(foundDc);
+          _dataSourceList[idx] =
+              BetterPlayerDataSource.network(downloadModel.url!);
+          notifyListeners();
+        }
+        notifyListeners();
+      }
+    }
+  }
+
+  void deleteLesson(DownloadModel downloadModel) {
+    final foundDc =
+        _dataSourceList.firstWhere((e) => e.url == downloadModel.path);
+    final idx = _dataSourceList.indexOf(foundDc);
+    _dataSourceList[idx] = BetterPlayerDataSource.network(downloadModel.url!);
+    notifyListeners();
   }
 
   //

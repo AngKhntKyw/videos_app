@@ -1,12 +1,13 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:videos_app/core/model/lesson.dart';
 part 'download_model.freezed.dart';
 part 'download_model.g.dart';
 
-@freezed
+@unfreezed
 class DownloadModel with _$DownloadModel {
   const DownloadModel._();
 
-  const factory DownloadModel({
+  factory DownloadModel({
     int? id,
     int? courseId,
     String? courseTitle,
@@ -20,12 +21,4 @@ class DownloadModel with _$DownloadModel {
 
   factory DownloadModel.fromJson(Map<String, dynamic> json) =>
       _$DownloadModelFromJson(json);
-}
-
-enum DownloadStatus {
-  none,
-  waiting,
-  running,
-  success,
-  fail,
 }

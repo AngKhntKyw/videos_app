@@ -21,14 +21,23 @@ DownloadModel _$DownloadModelFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$DownloadModel {
   int? get id => throw _privateConstructorUsedError;
+  set id(int? value) => throw _privateConstructorUsedError;
   int? get courseId => throw _privateConstructorUsedError;
+  set courseId(int? value) => throw _privateConstructorUsedError;
   String? get courseTitle => throw _privateConstructorUsedError;
+  set courseTitle(String? value) => throw _privateConstructorUsedError;
   String? get url => throw _privateConstructorUsedError;
+  set url(String? value) => throw _privateConstructorUsedError;
   String? get lessonTitle => throw _privateConstructorUsedError;
+  set lessonTitle(String? value) => throw _privateConstructorUsedError;
   String? get path => throw _privateConstructorUsedError;
+  set path(String? value) => throw _privateConstructorUsedError;
   String? get downloadUrl => throw _privateConstructorUsedError;
+  set downloadUrl(String? value) => throw _privateConstructorUsedError;
   double? get progress => throw _privateConstructorUsedError;
+  set progress(double? value) => throw _privateConstructorUsedError;
   DownloadStatus? get status => throw _privateConstructorUsedError;
+  set status(DownloadStatus? value) => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -203,7 +212,7 @@ class __$$DownloadModelImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$DownloadModelImpl extends _DownloadModel {
-  const _$DownloadModelImpl(
+  _$DownloadModelImpl(
       {this.id,
       this.courseId,
       this.courseTitle,
@@ -219,55 +228,29 @@ class _$DownloadModelImpl extends _DownloadModel {
       _$$DownloadModelImplFromJson(json);
 
   @override
-  final int? id;
+  int? id;
   @override
-  final int? courseId;
+  int? courseId;
   @override
-  final String? courseTitle;
+  String? courseTitle;
   @override
-  final String? url;
+  String? url;
   @override
-  final String? lessonTitle;
+  String? lessonTitle;
   @override
-  final String? path;
+  String? path;
   @override
-  final String? downloadUrl;
+  String? downloadUrl;
   @override
-  final double? progress;
+  double? progress;
   @override
   @JsonKey()
-  final DownloadStatus? status;
+  DownloadStatus? status;
 
   @override
   String toString() {
     return 'DownloadModel(id: $id, courseId: $courseId, courseTitle: $courseTitle, url: $url, lessonTitle: $lessonTitle, path: $path, downloadUrl: $downloadUrl, progress: $progress, status: $status)';
   }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$DownloadModelImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.courseId, courseId) ||
-                other.courseId == courseId) &&
-            (identical(other.courseTitle, courseTitle) ||
-                other.courseTitle == courseTitle) &&
-            (identical(other.url, url) || other.url == url) &&
-            (identical(other.lessonTitle, lessonTitle) ||
-                other.lessonTitle == lessonTitle) &&
-            (identical(other.path, path) || other.path == path) &&
-            (identical(other.downloadUrl, downloadUrl) ||
-                other.downloadUrl == downloadUrl) &&
-            (identical(other.progress, progress) ||
-                other.progress == progress) &&
-            (identical(other.status, status) || other.status == status));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode => Object.hash(runtimeType, id, courseId, courseTitle, url,
-      lessonTitle, path, downloadUrl, progress, status);
 
   @JsonKey(ignore: true)
   @override
@@ -284,39 +267,48 @@ class _$DownloadModelImpl extends _DownloadModel {
 }
 
 abstract class _DownloadModel extends DownloadModel {
-  const factory _DownloadModel(
-      {final int? id,
-      final int? courseId,
-      final String? courseTitle,
-      final String? url,
-      final String? lessonTitle,
-      final String? path,
-      final String? downloadUrl,
-      final double? progress,
-      final DownloadStatus? status}) = _$DownloadModelImpl;
-  const _DownloadModel._() : super._();
+  factory _DownloadModel(
+      {int? id,
+      int? courseId,
+      String? courseTitle,
+      String? url,
+      String? lessonTitle,
+      String? path,
+      String? downloadUrl,
+      double? progress,
+      DownloadStatus? status}) = _$DownloadModelImpl;
+  _DownloadModel._() : super._();
 
   factory _DownloadModel.fromJson(Map<String, dynamic> json) =
       _$DownloadModelImpl.fromJson;
 
   @override
   int? get id;
+  set id(int? value);
   @override
   int? get courseId;
+  set courseId(int? value);
   @override
   String? get courseTitle;
+  set courseTitle(String? value);
   @override
   String? get url;
+  set url(String? value);
   @override
   String? get lessonTitle;
+  set lessonTitle(String? value);
   @override
   String? get path;
+  set path(String? value);
   @override
   String? get downloadUrl;
+  set downloadUrl(String? value);
   @override
   double? get progress;
+  set progress(double? value);
   @override
   DownloadStatus? get status;
+  set status(DownloadStatus? value);
   @override
   @JsonKey(ignore: true)
   _$$DownloadModelImplCopyWith<_$DownloadModelImpl> get copyWith =>

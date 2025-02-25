@@ -21,12 +21,21 @@ Lesson _$LessonFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Lesson {
   int get id => throw _privateConstructorUsedError;
+  set id(int value) => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
+  set title(String value) => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
+  set description(String value) => throw _privateConstructorUsedError;
   String get instruction => throw _privateConstructorUsedError;
+  set instruction(String value) => throw _privateConstructorUsedError;
   String? get lessonType => throw _privateConstructorUsedError;
+  set lessonType(String? value) => throw _privateConstructorUsedError;
   String? get lessonUrl => throw _privateConstructorUsedError;
+  set lessonUrl(String? value) => throw _privateConstructorUsedError;
+  bool get isDownloaded => throw _privateConstructorUsedError;
+  set isDownloaded(bool value) => throw _privateConstructorUsedError;
   DownloadModel? get downloadModel => throw _privateConstructorUsedError;
+  set downloadModel(DownloadModel? value) => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -45,6 +54,7 @@ abstract class $LessonCopyWith<$Res> {
       String instruction,
       String? lessonType,
       String? lessonUrl,
+      bool isDownloaded,
       DownloadModel? downloadModel});
 
   $DownloadModelCopyWith<$Res>? get downloadModel;
@@ -69,6 +79,7 @@ class _$LessonCopyWithImpl<$Res, $Val extends Lesson>
     Object? instruction = null,
     Object? lessonType = freezed,
     Object? lessonUrl = freezed,
+    Object? isDownloaded = null,
     Object? downloadModel = freezed,
   }) {
     return _then(_value.copyWith(
@@ -96,6 +107,10 @@ class _$LessonCopyWithImpl<$Res, $Val extends Lesson>
           ? _value.lessonUrl
           : lessonUrl // ignore: cast_nullable_to_non_nullable
               as String?,
+      isDownloaded: null == isDownloaded
+          ? _value.isDownloaded
+          : isDownloaded // ignore: cast_nullable_to_non_nullable
+              as bool,
       downloadModel: freezed == downloadModel
           ? _value.downloadModel
           : downloadModel // ignore: cast_nullable_to_non_nullable
@@ -130,6 +145,7 @@ abstract class _$$LessonImplCopyWith<$Res> implements $LessonCopyWith<$Res> {
       String instruction,
       String? lessonType,
       String? lessonUrl,
+      bool isDownloaded,
       DownloadModel? downloadModel});
 
   @override
@@ -153,6 +169,7 @@ class __$$LessonImplCopyWithImpl<$Res>
     Object? instruction = null,
     Object? lessonType = freezed,
     Object? lessonUrl = freezed,
+    Object? isDownloaded = null,
     Object? downloadModel = freezed,
   }) {
     return _then(_$LessonImpl(
@@ -180,6 +197,10 @@ class __$$LessonImplCopyWithImpl<$Res>
           ? _value.lessonUrl
           : lessonUrl // ignore: cast_nullable_to_non_nullable
               as String?,
+      isDownloaded: null == isDownloaded
+          ? _value.isDownloaded
+          : isDownloaded // ignore: cast_nullable_to_non_nullable
+              as bool,
       downloadModel: freezed == downloadModel
           ? _value.downloadModel
           : downloadModel // ignore: cast_nullable_to_non_nullable
@@ -191,13 +212,14 @@ class __$$LessonImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$LessonImpl extends _Lesson {
-  const _$LessonImpl(
+  _$LessonImpl(
       {required this.id,
       required this.title,
       required this.description,
       required this.instruction,
       this.lessonType,
       this.lessonUrl,
+      this.isDownloaded = false,
       this.downloadModel})
       : super._();
 
@@ -205,48 +227,27 @@ class _$LessonImpl extends _Lesson {
       _$$LessonImplFromJson(json);
 
   @override
-  final int id;
+  int id;
   @override
-  final String title;
+  String title;
   @override
-  final String description;
+  String description;
   @override
-  final String instruction;
+  String instruction;
   @override
-  final String? lessonType;
+  String? lessonType;
   @override
-  final String? lessonUrl;
+  String? lessonUrl;
   @override
-  final DownloadModel? downloadModel;
+  @JsonKey()
+  bool isDownloaded;
+  @override
+  DownloadModel? downloadModel;
 
   @override
   String toString() {
-    return 'Lesson(id: $id, title: $title, description: $description, instruction: $instruction, lessonType: $lessonType, lessonUrl: $lessonUrl, downloadModel: $downloadModel)';
+    return 'Lesson(id: $id, title: $title, description: $description, instruction: $instruction, lessonType: $lessonType, lessonUrl: $lessonUrl, isDownloaded: $isDownloaded, downloadModel: $downloadModel)';
   }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$LessonImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.title, title) || other.title == title) &&
-            (identical(other.description, description) ||
-                other.description == description) &&
-            (identical(other.instruction, instruction) ||
-                other.instruction == instruction) &&
-            (identical(other.lessonType, lessonType) ||
-                other.lessonType == lessonType) &&
-            (identical(other.lessonUrl, lessonUrl) ||
-                other.lessonUrl == lessonUrl) &&
-            (identical(other.downloadModel, downloadModel) ||
-                other.downloadModel == downloadModel));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode => Object.hash(runtimeType, id, title, description,
-      instruction, lessonType, lessonUrl, downloadModel);
 
   @JsonKey(ignore: true)
   @override
@@ -263,32 +264,43 @@ class _$LessonImpl extends _Lesson {
 }
 
 abstract class _Lesson extends Lesson {
-  const factory _Lesson(
-      {required final int id,
-      required final String title,
-      required final String description,
-      required final String instruction,
-      final String? lessonType,
-      final String? lessonUrl,
-      final DownloadModel? downloadModel}) = _$LessonImpl;
+  factory _Lesson(
+      {required int id,
+      required String title,
+      required String description,
+      required String instruction,
+      String? lessonType,
+      String? lessonUrl,
+      bool isDownloaded,
+      DownloadModel? downloadModel}) = _$LessonImpl;
   const _Lesson._() : super._();
 
   factory _Lesson.fromJson(Map<String, dynamic> json) = _$LessonImpl.fromJson;
 
   @override
   int get id;
+  set id(int value);
   @override
   String get title;
+  set title(String value);
   @override
   String get description;
+  set description(String value);
   @override
   String get instruction;
+  set instruction(String value);
   @override
   String? get lessonType;
+  set lessonType(String? value);
   @override
   String? get lessonUrl;
+  set lessonUrl(String? value);
+  @override
+  bool get isDownloaded;
+  set isDownloaded(bool value);
   @override
   DownloadModel? get downloadModel;
+  set downloadModel(DownloadModel? value);
   @override
   @JsonKey(ignore: true)
   _$$LessonImplCopyWith<_$LessonImpl> get copyWith =>

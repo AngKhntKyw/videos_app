@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:videos_app/core/model/course.dart';
 import 'package:videos_app/core/model/lesson.dart';
 import 'package:videos_app/provider/course_provider.dart';
+import 'package:videos_app/provider/download_task_provider.dart';
+import 'package:videos_app/widgets/download_delete_widget.dart';
 
 class CourseDetailPage extends StatefulWidget {
   final Course course;
@@ -152,6 +154,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
                   children: [
                     //
                     ListView.builder(
+                      addAutomaticKeepAlives: false,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: widget.course.units[index].lessons.length,
@@ -166,11 +169,9 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
                             if (currentLesson.lessonUrl != null) {
                               await getKey?.betterPlayerController!
                                   .clearCache();
-
                               getKey?.setupDataSource(
                                 courseProvider.findDataSourceIndexByLesson(
-                                  lesson: currentLesson,
-                                ),
+                                    lesson: currentLesson),
                               );
                             } else {
                               log("Lesson URL : null");
@@ -183,16 +184,14 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
                                   color: Colors.green,
                                 )
                               : const Icon(Icons.play_circle),
-                          title: Text(
-                            currentLesson.title,
-                          ),
-                          subtitle: Text(
-                            currentLesson.description,
-                            maxLines: 2,
-                          ),
-                          trailing: IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.file_download_outlined),
+                          title: Text(currentLesson.title),
+                          subtitle:
+                              Text(currentLesson.description, maxLines: 2),
+                          trailing: DownloadDelete(
+                            unitIdx: widget.course.units
+                                .indexOf(widget.course.units[index]),
+                            lessonIdx: widget.course.units[index].lessons
+                                .indexOf(currentLesson),
                           ),
                         );
                       },
@@ -202,7 +201,6 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
               },
             ),
           ),
-
           //
         ],
       ),

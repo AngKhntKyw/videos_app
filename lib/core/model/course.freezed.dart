@@ -21,13 +21,21 @@ Course _$CourseFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Course {
   int get id => throw _privateConstructorUsedError;
+  set id(int value) => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
+  set title(String value) => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
+  set description(String value) => throw _privateConstructorUsedError;
   String get imgUrl => throw _privateConstructorUsedError;
+  set imgUrl(String value) => throw _privateConstructorUsedError;
   String get introVideoUrl => throw _privateConstructorUsedError;
+  set introVideoUrl(String value) => throw _privateConstructorUsedError;
   double get price => throw _privateConstructorUsedError;
+  set price(double value) => throw _privateConstructorUsedError;
   String get outline => throw _privateConstructorUsedError;
+  set outline(String value) => throw _privateConstructorUsedError;
   List<Unit> get units => throw _privateConstructorUsedError;
+  set units(List<Unit> value) => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -177,7 +185,7 @@ class __$$CourseImplCopyWithImpl<$Res>
           : outline // ignore: cast_nullable_to_non_nullable
               as String,
       units: null == units
-          ? _value._units
+          ? _value.units
           : units // ignore: cast_nullable_to_non_nullable
               as List<Unit>,
     ));
@@ -187,7 +195,7 @@ class __$$CourseImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$CourseImpl extends _Course {
-  const _$CourseImpl(
+  _$CourseImpl(
       {required this.id,
       required this.title,
       required this.description,
@@ -195,69 +203,33 @@ class _$CourseImpl extends _Course {
       required this.introVideoUrl,
       required this.price,
       required this.outline,
-      required final List<Unit> units})
-      : _units = units,
-        super._();
+      required this.units})
+      : super._();
 
   factory _$CourseImpl.fromJson(Map<String, dynamic> json) =>
       _$$CourseImplFromJson(json);
 
   @override
-  final int id;
+  int id;
   @override
-  final String title;
+  String title;
   @override
-  final String description;
+  String description;
   @override
-  final String imgUrl;
+  String imgUrl;
   @override
-  final String introVideoUrl;
+  String introVideoUrl;
   @override
-  final double price;
+  double price;
   @override
-  final String outline;
-  final List<Unit> _units;
+  String outline;
   @override
-  List<Unit> get units {
-    if (_units is EqualUnmodifiableListView) return _units;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_units);
-  }
+  List<Unit> units;
 
   @override
   String toString() {
     return 'Course(id: $id, title: $title, description: $description, imgUrl: $imgUrl, introVideoUrl: $introVideoUrl, price: $price, outline: $outline, units: $units)';
   }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$CourseImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.title, title) || other.title == title) &&
-            (identical(other.description, description) ||
-                other.description == description) &&
-            (identical(other.imgUrl, imgUrl) || other.imgUrl == imgUrl) &&
-            (identical(other.introVideoUrl, introVideoUrl) ||
-                other.introVideoUrl == introVideoUrl) &&
-            (identical(other.price, price) || other.price == price) &&
-            (identical(other.outline, outline) || other.outline == outline) &&
-            const DeepCollectionEquality().equals(other._units, _units));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      title,
-      description,
-      imgUrl,
-      introVideoUrl,
-      price,
-      outline,
-      const DeepCollectionEquality().hash(_units));
 
   @JsonKey(ignore: true)
   @override
@@ -274,35 +246,43 @@ class _$CourseImpl extends _Course {
 }
 
 abstract class _Course extends Course {
-  const factory _Course(
-      {required final int id,
-      required final String title,
-      required final String description,
-      required final String imgUrl,
-      required final String introVideoUrl,
-      required final double price,
-      required final String outline,
-      required final List<Unit> units}) = _$CourseImpl;
+  factory _Course(
+      {required int id,
+      required String title,
+      required String description,
+      required String imgUrl,
+      required String introVideoUrl,
+      required double price,
+      required String outline,
+      required List<Unit> units}) = _$CourseImpl;
   const _Course._() : super._();
 
   factory _Course.fromJson(Map<String, dynamic> json) = _$CourseImpl.fromJson;
 
   @override
   int get id;
+  set id(int value);
   @override
   String get title;
+  set title(String value);
   @override
   String get description;
+  set description(String value);
   @override
   String get imgUrl;
+  set imgUrl(String value);
   @override
   String get introVideoUrl;
+  set introVideoUrl(String value);
   @override
   double get price;
+  set price(double value);
   @override
   String get outline;
+  set outline(String value);
   @override
   List<Unit> get units;
+  set units(List<Unit> value);
   @override
   @JsonKey(ignore: true)
   _$$CourseImplCopyWith<_$CourseImpl> get copyWith =>

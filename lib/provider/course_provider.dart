@@ -1,11 +1,15 @@
-import 'dart:developer';
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:videos_app/core/model/course.dart';
 import 'package:videos_app/core/model/download_model.dart';
 import 'package:videos_app/core/model/lesson.dart';
+import 'package:videos_app/provider/database_helper.dart';
+import 'package:videos_app/provider/m3u8_downloader.dart';
 
 class CourseProvider with ChangeNotifier {
+  DatabaseHelper db = GetIt.instance.get<DatabaseHelper>();
+
   //
   Course? _currentCourse;
   Course? get currentCourse => _currentCourse;
@@ -21,36 +25,14 @@ class CourseProvider with ChangeNotifier {
 
   void setUpVideoDataSource({required Course course}) {
     // assign current course
-
+    _currentCourse = course;
     _dataSourceList.clear();
     _videoLessons.clear();
-    _currentCourse = course;
 
     // add intro video into dataSourceLists
 
     _dataSourceList.add(
-      BetterPlayerDataSource.network(
-        course.introVideoUrl,
-        drmConfiguration: BetterPlayerDrmConfiguration(),
-        liveStream: false,
-        useAsmsTracks: true,
-        videoFormat: BetterPlayerVideoFormat.hls,
-        useAsmsAudioTracks: true,
-        useAsmsSubtitles: true,
-        cacheConfiguration: BetterPlayerCacheConfiguration(
-          key: course.introVideoUrl,
-          useCache: true,
-          preCacheSize: 10 * 2024 * 2024,
-          maxCacheSize: 10 * 1024 * 1024,
-          maxCacheFileSize: 50 * 1024 * 1024,
-        ),
-        bufferingConfiguration: const BetterPlayerBufferingConfiguration(
-          minBufferMs: 20000,
-          maxBufferMs: 50000,
-          bufferForPlaybackMs: 2500,
-          bufferForPlaybackAfterRebufferMs: 5000,
-        ),
-      ),
+      BetterPlayerDataSource.network(course.introVideoUrl),
     );
 
     //
@@ -63,29 +45,10 @@ class CourseProvider with ChangeNotifier {
     for (Lesson lesson in _videoLessons) {
       _dataSourceList.add(
         BetterPlayerDataSource.network(
-          lesson.lessonUrl ?? "https://www.youtube.com/watch?v=BgazxvsE0Uk",
-          drmConfiguration: BetterPlayerDrmConfiguration(),
-          liveStream: false,
-          useAsmsTracks: true,
-          videoFormat: BetterPlayerVideoFormat.hls,
-          useAsmsAudioTracks: true,
-          useAsmsSubtitles: true,
-          cacheConfiguration: BetterPlayerCacheConfiguration(
-            key: lesson.lessonUrl,
-            useCache: true,
-            preCacheSize: 10 * 2024 * 2024,
-            maxCacheSize: 10 * 1024 * 1024,
-            maxCacheFileSize: 50 * 1024 * 1024,
-          ),
-          bufferingConfiguration: const BetterPlayerBufferingConfiguration(
-            minBufferMs: 20000,
-            maxBufferMs: 50000,
-            bufferForPlaybackMs: 2500,
-            bufferForPlaybackAfterRebufferMs: 5000,
-          ),
-        ),
+            lesson.lessonUrl ?? "https://www.youtube.com/watch?v=BgazxvsE0Uk"),
       );
     }
+    notifyListeners();
   }
 
   int findDataSourceIndexByLesson({required Lesson lesson}) {
@@ -106,7 +69,7 @@ class CourseProvider with ChangeNotifier {
   }
 
   Lesson? findLessonByDownloadModelId({required int downloadModelId}) {
-    for (var unit in currentCourse!.units) {
+    for (var unit in _currentCourse!.units) {
       for (var lesson in unit.lessons) {
         if (lesson.downloadModel?.id == downloadModelId) {
           return lesson;
@@ -124,33 +87,24 @@ class CourseProvider with ChangeNotifier {
   }
 
   void updateCourse(DownloadModel downloadModel) {
-    log('Lesson : ${downloadModel.status!.name} | ${downloadModel.path}');
-    if (currentCourse != null) {
+    if (_currentCourse != null) {
       final foundLesson =
           findLessonByDownloadModelId(downloadModelId: downloadModel.id!);
       if (foundLesson != null) {
         foundLesson.downloadModel = downloadModel;
 
         if (downloadModel.path != null && downloadModel.path!.isNotEmpty) {
-          foundLesson.downloadModel!.courseId = currentCourse!.id;
+          foundLesson.downloadModel!.courseId = _currentCourse!.id;
           foundLesson.downloadModel!.path = downloadModel.path;
-          foundLesson.downloadModel!.courseTitle = currentCourse!.title;
+          foundLesson.downloadModel!.courseTitle = _currentCourse!.title;
 
-          // Find Player DataSource and Replace
-          // with local downloaded path
-          // if not the lesson type is not pdf
+          final foundDc =
+              _dataSourceList.firstWhere((e) => e.url == downloadModel.url);
 
-          if (foundLesson.lessonType == "PDF") {
-            notifyListeners();
-          } else {
-            final foundDc =
-                _dataSourceList.firstWhere((e) => e.url == downloadModel.url);
-            log('FoundDc : ${foundDc.url}');
-            final idx = _dataSourceList.indexOf(foundDc);
-            _dataSourceList[idx] =
-                BetterPlayerDataSource.file(downloadModel.path!);
-            notifyListeners();
-          }
+          final idx = _dataSourceList.indexOf(foundDc);
+          _dataSourceList[idx] =
+              BetterPlayerDataSource.file(downloadModel.path!);
+          notifyListeners();
         } else {
           final foundDc =
               _dataSourceList.firstWhere((e) => e.url == downloadModel.url);
@@ -162,14 +116,6 @@ class CourseProvider with ChangeNotifier {
         notifyListeners();
       }
     }
-  }
-
-  void deleteLesson(DownloadModel downloadModel) {
-    final foundDc =
-        _dataSourceList.firstWhere((e) => e.url == downloadModel.path);
-    final idx = _dataSourceList.indexOf(foundDc);
-    _dataSourceList[idx] = BetterPlayerDataSource.network(downloadModel.url!);
-    notifyListeners();
   }
 
   //

@@ -32,7 +32,7 @@ class DatabaseHelper {
 
   void _onCreate(Database db, int version) async {
     await db.execute(
-      "CREATE TABLE Downloads(id INTEGER PRIMARY KEY AUTOINCREMENT,courseId INTEGER, url TEXT,downloadUrl TEXT, name TEXT,courseTitle TEXT,instructors TEXT, progress REAL, status TEXT, path TEXT)",
+      "CREATE TABLE Downloads(id INTEGER PRIMARY KEY AUTOINCREMENT,courseId INTEGER, url TEXT,downloadUrl TEXT,lessonTitle TEXT,courseTitle TEXT, progress REAL, status TEXT, path TEXT)",
     );
   }
 

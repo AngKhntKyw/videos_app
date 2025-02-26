@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:videos_app/core/model/course.dart';
 import 'package:videos_app/core/model/lesson.dart';
 import 'package:videos_app/provider/course_provider.dart';
-import 'package:videos_app/provider/download_task_provider.dart';
 import 'package:videos_app/widgets/download_delete_widget.dart';
 
 class CourseDetailPage extends StatefulWidget {
@@ -29,13 +28,20 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
 
   @override
   void initState() {
-    context.read<CourseProvider>().setUpVideoDataSource(course: widget.course);
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) {
+        context
+            .read<CourseProvider>()
+            .setUpVideoDataSource(course: widget.course);
+      },
+    );
     initBetterPlayer();
     super.initState();
   }
 
   @override
   void didPop() async {
+    log("Did pop");
     context.read<CourseProvider>().clearDataSources();
     await getKey?.betterPlayerController!.clearCache();
     await getKey?.betterPlayerController!.videoPlayerController!.dispose();
@@ -68,6 +74,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
         switch (event.betterPlayerEventType) {
           //
           case BetterPlayerEventType.setupDataSource:
+
             // resetTimer();
             break;
 
@@ -90,6 +97,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
                   .videoPlayerController!.value.aspectRatio;
               getKey?.betterPlayerController!
                   .setOverriddenAspectRatio(aspectRatio!);
+              await getKey?.betterPlayerController!.pause();
             }
             break;
 
@@ -118,92 +126,102 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
     final courseProvider = context.watch<CourseProvider>();
 
     return Scaffold(
-      appBar: AppBar(title: Text(courseProvider.currentCourse!.title)),
-      body: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          BetterPlayerPlaylist(
-            betterPlayerConfiguration: betterPlayerConfiguration,
-            key: betterPlayerPlaylistStateKey,
-            betterPlayerDataSourceList: courseProvider.dataSourceList,
-            betterPlayerPlaylistConfiguration:
-                betterPlayerPlaylistConfiguration,
-          ),
+      appBar: AppBar(),
+      body: courseProvider.currentCourse == null
+          ? const CircularProgressIndicator()
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                BetterPlayerPlaylist(
+                  betterPlayerConfiguration: betterPlayerConfiguration,
+                  key: betterPlayerPlaylistStateKey,
+                  betterPlayerDataSourceList: courseProvider.dataSourceList,
+                  betterPlayerPlaylistConfiguration:
+                      betterPlayerPlaylistConfiguration,
+                ),
 
-          //
-          Expanded(
-            child: ListView.builder(
-              physics: const ClampingScrollPhysics(),
-              itemCount: widget.course.units.length,
-              itemBuilder: (context, index) {
-                return ExpansionTile(
-                  childrenPadding: const EdgeInsets.symmetric(horizontal: 10),
-                  shape: const ContinuousRectangleBorder(
-                      side: BorderSide(color: Colors.grey, width: 0)),
-                  controlAffinity: ListTileControlAffinity.trailing,
-                  enableFeedback: true,
-                  expansionAnimationStyle: AnimationStyle(
-                    curve: Curves.easeInOut,
-                    reverseCurve: Curves.easeInOut,
-                  ),
-                  dense: true,
-                  title: Text(widget.course.units[index].name),
-                  subtitle: Text(
-                      "${widget.course.units[index].lessons.length} lessons"),
-                  onExpansionChanged: (value) {},
-                  children: [
-                    //
-                    ListView.builder(
-                      addAutomaticKeepAlives: false,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: widget.course.units[index].lessons.length,
-                      itemBuilder: (context, lessonIndex) {
-                        Lesson currentLesson =
-                            widget.course.units[index].lessons[lessonIndex];
+                //
+                Expanded(
+                  child: ListView.builder(
+                    physics: const ClampingScrollPhysics(),
+                    itemCount: courseProvider.currentCourse!.units.length,
+                    itemBuilder: (context, index) {
+                      return ExpansionTile(
+                        childrenPadding:
+                            const EdgeInsets.symmetric(horizontal: 10),
+                        shape: const ContinuousRectangleBorder(
+                            side: BorderSide(color: Colors.grey, width: 0)),
+                        controlAffinity: ListTileControlAffinity.trailing,
+                        enableFeedback: true,
+                        expansionAnimationStyle: AnimationStyle(
+                          curve: Curves.easeInOut,
+                          reverseCurve: Curves.easeInOut,
+                        ),
+                        dense: true,
+                        title: Text(
+                            courseProvider.currentCourse!.units[index].name),
+                        subtitle: Text(
+                            "${courseProvider.currentCourse!.units[index].lessons.length} lessons"),
+                        onExpansionChanged: (value) {},
+                        children: [
+                          //
+                          ListView.builder(
+                            addAutomaticKeepAlives: false,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: courseProvider
+                                .currentCourse!.units[index].lessons.length,
+                            itemBuilder: (context, lessonIndex) {
+                              Lesson currentLesson = courseProvider
+                                  .currentCourse!
+                                  .units[index]
+                                  .lessons[lessonIndex];
 
-                        //
-                        return ListTile(
-                          dense: true,
-                          onTap: () async {
-                            if (currentLesson.lessonUrl != null) {
-                              await getKey?.betterPlayerController!
-                                  .clearCache();
-                              getKey?.setupDataSource(
-                                courseProvider.findDataSourceIndexByLesson(
-                                    lesson: currentLesson),
+                              //
+                              return ListTile(
+                                dense: true,
+                                onTap: () async {
+                                  if (currentLesson.lessonUrl != null) {
+                                    await getKey?.betterPlayerController!
+                                        .clearCache();
+                                    getKey?.setupDataSource(
+                                      courseProvider
+                                          .findDataSourceIndexByLesson(
+                                              lesson: currentLesson),
+                                    );
+                                  } else {
+                                    log("Lesson URL : null");
+                                  }
+                                },
+                                leading: courseProvider.isLessonWatching(
+                                        lessonId: currentLesson.id)
+                                    ? const Icon(
+                                        Icons.pause_circle,
+                                        color: Colors.green,
+                                      )
+                                    : const Icon(Icons.play_circle),
+                                title: Text(currentLesson.title),
+                                subtitle: Text(currentLesson.description,
+                                    maxLines: 2),
+                                trailing: DownloadDelete(
+                                  unitIdx: courseProvider.currentCourse!.units
+                                      .indexOf(courseProvider
+                                          .currentCourse!.units[index]),
+                                  lessonIdx: courseProvider
+                                      .currentCourse!.units[index].lessons
+                                      .indexOf(currentLesson),
+                                ),
                               );
-                            } else {
-                              log("Lesson URL : null");
-                            }
-                          },
-                          leading: courseProvider.isLessonWatching(
-                                  lessonId: currentLesson.id)
-                              ? const Icon(
-                                  Icons.pause_circle,
-                                  color: Colors.green,
-                                )
-                              : const Icon(Icons.play_circle),
-                          title: Text(currentLesson.title),
-                          subtitle:
-                              Text(currentLesson.description, maxLines: 2),
-                          trailing: DownloadDelete(
-                            unitIdx: widget.course.units
-                                .indexOf(widget.course.units[index]),
-                            lessonIdx: widget.course.units[index].lessons
-                                .indexOf(currentLesson),
+                            },
                           ),
-                        );
-                      },
-                    ),
-                  ],
-                );
-              },
+                        ],
+                      );
+                    },
+                  ),
+                ),
+                //
+              ],
             ),
-          ),
-          //
-        ],
-      ),
     );
   }
 }

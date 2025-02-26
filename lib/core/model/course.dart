@@ -3,11 +3,11 @@ import 'package:videos_app/core/model/unit.dart';
 part 'course.freezed.dart';
 part 'course.g.dart';
 
-@freezed
+@unfreezed
 class Course with _$Course {
   const Course._();
 
-  const factory Course({
+  factory Course({
     required int id,
     required String title,
     required String description,

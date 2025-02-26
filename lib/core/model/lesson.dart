@@ -1,9 +1,11 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:videos_app/core/model/download_model.dart';
+
 part 'lesson.freezed.dart';
 part 'lesson.g.dart';
 
 @unfreezed
+@JsonSerializable(explicitToJson: true)
 class Lesson with _$Lesson {
   const Lesson._();
 
@@ -18,7 +20,19 @@ class Lesson with _$Lesson {
     DownloadModel? downloadModel,
   }) = _Lesson;
 
-  factory Lesson.fromJson(Map<String, dynamic> json) => _$LessonFromJson(json);
+  // Override the factory constructor to auto-assign DownloadModel
+  factory Lesson.fromJson(Map<String, dynamic> json) => _$LessonFromJson(json)
+    ..downloadModel = DownloadModel(
+      id: json['id'] as int,
+      courseId: 0,
+      courseTitle: json['title'] as String,
+      url: json['lessonUrl'] as String?,
+      downloadUrl: json['lessonUrl'] as String?,
+      lessonTitle: json['title'] as String,
+      progress: 0.0,
+      status: DownloadStatus.none,
+      path: '',
+    );
 }
 
 enum DownloadStatus {

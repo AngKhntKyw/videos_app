@@ -273,7 +273,7 @@ abstract class _Lesson extends Lesson {
       String? lessonUrl,
       bool isDownloaded,
       DownloadModel? downloadModel}) = _$LessonImpl;
-  const _Lesson._() : super._();
+  _Lesson._() : super._();
 
   factory _Lesson.fromJson(Map<String, dynamic> json) = _$LessonImpl.fromJson;
 

@@ -255,7 +255,7 @@ abstract class _Course extends Course {
       required double price,
       required String outline,
       required List<Unit> units}) = _$CourseImpl;
-  const _Course._() : super._();
+  _Course._() : super._();
 
   factory _Course.fromJson(Map<String, dynamic> json) = _$CourseImpl.fromJson;
 

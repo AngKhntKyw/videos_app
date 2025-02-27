@@ -24,6 +24,8 @@ mixin _$DownloadModel {
   set id(int? value) => throw _privateConstructorUsedError;
   int? get courseId => throw _privateConstructorUsedError;
   set courseId(int? value) => throw _privateConstructorUsedError;
+  int? get lessonId => throw _privateConstructorUsedError;
+  set lessonId(int? value) => throw _privateConstructorUsedError;
   String? get courseTitle => throw _privateConstructorUsedError;
   set courseTitle(String? value) => throw _privateConstructorUsedError;
   String? get url => throw _privateConstructorUsedError;
@@ -54,6 +56,7 @@ abstract class $DownloadModelCopyWith<$Res> {
   $Res call(
       {int? id,
       int? courseId,
+      int? lessonId,
       String? courseTitle,
       String? url,
       String? lessonTitle,
@@ -78,6 +81,7 @@ class _$DownloadModelCopyWithImpl<$Res, $Val extends DownloadModel>
   $Res call({
     Object? id = freezed,
     Object? courseId = freezed,
+    Object? lessonId = freezed,
     Object? courseTitle = freezed,
     Object? url = freezed,
     Object? lessonTitle = freezed,
@@ -94,6 +98,10 @@ class _$DownloadModelCopyWithImpl<$Res, $Val extends DownloadModel>
       courseId: freezed == courseId
           ? _value.courseId
           : courseId // ignore: cast_nullable_to_non_nullable
+              as int?,
+      lessonId: freezed == lessonId
+          ? _value.lessonId
+          : lessonId // ignore: cast_nullable_to_non_nullable
               as int?,
       courseTitle: freezed == courseTitle
           ? _value.courseTitle
@@ -138,6 +146,7 @@ abstract class _$$DownloadModelImplCopyWith<$Res>
   $Res call(
       {int? id,
       int? courseId,
+      int? lessonId,
       String? courseTitle,
       String? url,
       String? lessonTitle,
@@ -160,6 +169,7 @@ class __$$DownloadModelImplCopyWithImpl<$Res>
   $Res call({
     Object? id = freezed,
     Object? courseId = freezed,
+    Object? lessonId = freezed,
     Object? courseTitle = freezed,
     Object? url = freezed,
     Object? lessonTitle = freezed,
@@ -176,6 +186,10 @@ class __$$DownloadModelImplCopyWithImpl<$Res>
       courseId: freezed == courseId
           ? _value.courseId
           : courseId // ignore: cast_nullable_to_non_nullable
+              as int?,
+      lessonId: freezed == lessonId
+          ? _value.lessonId
+          : lessonId // ignore: cast_nullable_to_non_nullable
               as int?,
       courseTitle: freezed == courseTitle
           ? _value.courseTitle
@@ -215,6 +229,7 @@ class _$DownloadModelImpl extends _DownloadModel {
   _$DownloadModelImpl(
       {this.id,
       this.courseId,
+      this.lessonId,
       this.courseTitle,
       this.url,
       this.lessonTitle,
@@ -231,6 +246,8 @@ class _$DownloadModelImpl extends _DownloadModel {
   int? id;
   @override
   int? courseId;
+  @override
+  int? lessonId;
   @override
   String? courseTitle;
   @override
@@ -249,7 +266,7 @@ class _$DownloadModelImpl extends _DownloadModel {
 
   @override
   String toString() {
-    return 'DownloadModel(id: $id, courseId: $courseId, courseTitle: $courseTitle, url: $url, lessonTitle: $lessonTitle, path: $path, downloadUrl: $downloadUrl, progress: $progress, status: $status)';
+    return 'DownloadModel(id: $id, courseId: $courseId, lessonId: $lessonId, courseTitle: $courseTitle, url: $url, lessonTitle: $lessonTitle, path: $path, downloadUrl: $downloadUrl, progress: $progress, status: $status)';
   }
 
   @JsonKey(ignore: true)
@@ -270,6 +287,7 @@ abstract class _DownloadModel extends DownloadModel {
   factory _DownloadModel(
       {int? id,
       int? courseId,
+      int? lessonId,
       String? courseTitle,
       String? url,
       String? lessonTitle,
@@ -288,6 +306,9 @@ abstract class _DownloadModel extends DownloadModel {
   @override
   int? get courseId;
   set courseId(int? value);
+  @override
+  int? get lessonId;
+  set lessonId(int? value);
   @override
   String? get courseTitle;
   set courseTitle(String? value);

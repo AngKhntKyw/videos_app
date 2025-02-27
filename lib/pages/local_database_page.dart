@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+import 'package:provider/provider.dart';
 import 'package:videos_app/core/model/download_model.dart';
-import 'package:videos_app/provider/database_helper.dart';
+import 'package:videos_app/provider/course_provider.dart';
 
 class LocalDatabasePage extends StatefulWidget {
   const LocalDatabasePage({super.key});
@@ -11,24 +11,36 @@ class LocalDatabasePage extends StatefulWidget {
 }
 
 class _LocalDatabasePageState extends State<LocalDatabasePage> {
-  final DatabaseHelper db = GetIt.instance.get<DatabaseHelper>();
-
   @override
   Widget build(BuildContext context) {
+    final courseProvider = context.read<CourseProvider>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Local Database"),
+        actions: [
+          IconButton(
+              onPressed: () {
+                courseProvider.deleteLocallDatabase();
+                setState(() {});
+              },
+              icon: const Icon(Icons.delete)),
+        ],
       ),
       body: FutureBuilder(
-        future: db.getDownloads(),
+        future: courseProvider.getLocalDownloads(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator();
-          } else if (snapshot.hasError) {
-            return Text(snapshot.error.toString());
           }
-          List<DownloadModel> downloads = snapshot.data!;
+          if (snapshot.hasError) {
+            return Center(child: Text(snapshot.error.toString()));
+          }
+          if (snapshot.hasData && snapshot.data!.isEmpty) {
+            return const Center(child: Text("data not found"));
+          }
 
+          final downloads = snapshot.data!;
           //
           return ListView.builder(
             itemCount: downloads.length,

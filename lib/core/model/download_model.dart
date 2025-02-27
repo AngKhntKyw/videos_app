@@ -10,6 +10,7 @@ class DownloadModel with _$DownloadModel {
   factory DownloadModel({
     int? id,
     int? courseId,
+    int? lessonId,
     String? courseTitle,
     String? url,
     String? lessonTitle,

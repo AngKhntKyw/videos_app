@@ -1,6 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:videos_app/core/model/download_model.dart';
-
 part 'lesson.freezed.dart';
 part 'lesson.g.dart';
 
@@ -25,6 +24,7 @@ class Lesson with _$Lesson {
     ..downloadModel = DownloadModel(
       id: json['id'] as int,
       courseId: 0,
+      lessonId: json['id'] as int,
       courseTitle: json['title'] as String,
       url: json['lessonUrl'] as String?,
       downloadUrl: json['lessonUrl'] as String?,

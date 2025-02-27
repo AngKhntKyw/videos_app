@@ -4,7 +4,8 @@ part of 'lesson.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
-// *
+// **************************************************************************
+
 Map<String, dynamic> _$LessonToJson(Lesson instance) => <String, dynamic>{
       'id': instance.id,
       'title': instance.title,

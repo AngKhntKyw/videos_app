@@ -32,7 +32,7 @@ class M3U8Downloader {
       cmd,
       (Session session) async {
         final returnCode = await session.getReturnCode();
-        log('Data: failStackTrace ${await session.getFailStackTrace()}');
+        log('Data: ${await session.getFailStackTrace()}');
         if (ReturnCode.isSuccess(returnCode)) {
           log("Data: SUCCESS Download success");
           completer.complete(fileName);

@@ -261,15 +261,8 @@ class _CourseDetailPageState extends State<CourseDetailPage> with RouteAware {
                                     final download =
                                         provider.getDownloadModelForLesson(
                                             currentLesson);
-                                    return Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        _buildDownloadStatus(
-                                            currentLesson, provider, download!),
-                                        _buildDownloadButton(
-                                            currentLesson, provider, download),
-                                      ],
-                                    );
+                                    return _buildDownloadButton(
+                                        currentLesson, provider, download!);
                                   },
                                 ),
                               );
@@ -312,31 +305,46 @@ Widget _buildDownloadStatus(
 
 Widget _buildDownloadButton(
     Lesson lesson, CourseProvider provider, DownloadModel download) {
-  IconData icon;
+  Widget icon;
   bool isEnabled = true;
 
   switch (download.status) {
     case DownloadStatus.waiting:
-      icon = Icons.hourglass_empty;
+      icon = const Icon(Icons.hourglass_empty);
       break;
     case DownloadStatus.running:
-      icon = Icons.downloading;
+      icon = SizedBox(
+        width: 20,
+        height: 20,
+        child: CircularProgressIndicator(
+          backgroundColor: const Color.fromARGB(255, 206, 205, 205),
+          strokeWidth: 2,
+          color: Colors.green,
+          value: download.progress,
+        ),
+      );
       break;
     case DownloadStatus.success:
-      icon = Icons.download_done;
+      icon = const Icon(
+        Icons.check_circle,
+        color: Colors.green,
+      );
       isEnabled = false;
       break;
     case DownloadStatus.fail:
-      icon = Icons.error_outline;
+      icon = const Icon(
+        Icons.error_outline,
+        color: Colors.red,
+      );
       break;
     case DownloadStatus.none:
     default:
-      icon = Icons.file_download_outlined;
+      icon = const Icon(Icons.file_download_outlined);
       break;
   }
 
   return IconButton(
     onPressed: isEnabled ? () => provider.queueForDownload(lesson) : null,
-    icon: Icon(icon),
+    icon: icon,
   );
 }

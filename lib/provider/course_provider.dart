@@ -149,12 +149,13 @@ class CourseProvider with ChangeNotifier {
     notifyListeners();
 
     final localPath = await _downloader.download(
-      url: download.downloadUrl!,
-      lessonTitle: download.lessonTitle!,
+      url: runningDownload.downloadUrl!,
+      lessonTitle: runningDownload.lessonTitle!,
       onProgress: (progress) async {
-        final updatedDownload = download.copyWith(progress: progress);
+        final updatedDownload = runningDownload.copyWith(progress: progress);
         _updateDownloadInCache(updatedDownload);
         await _dbHelper.updateDownload(updatedDownload);
+
         notifyListeners();
       },
     );

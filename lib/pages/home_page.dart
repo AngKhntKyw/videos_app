@@ -111,6 +111,7 @@ class ListViewCourseCard extends StatelessWidget {
                         course.description,
                         maxLines: 2,
                         style: const TextStyle(fontSize: 12),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),

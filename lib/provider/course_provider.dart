@@ -25,6 +25,7 @@ class CourseProvider with ChangeNotifier {
   bool _isDownloading = false;
 
   List<DownloadModel> _downloadsCache = [];
+  List<DownloadModel> get downlaodCache => _downloadsCache;
 
   CourseProvider() {
     _initDownloads();

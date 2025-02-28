@@ -21,7 +21,7 @@ class _LocalDatabasePageState extends State<LocalDatabasePage> {
         actions: [
           IconButton(
               onPressed: () {
-                courseProvider.deleteLocallDatabase();
+                courseProvider.deleteLocalDatabase();
                 setState(() {});
               },
               icon: const Icon(Icons.delete)),
